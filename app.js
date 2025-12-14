@@ -1,49 +1,97 @@
-const roulette = document.getElementById("roulette");
-const spinBtn = document.getElementById("spinBtn");
-
 Telegram.WebApp.ready();
 
+const rouletteEl = document.getElementById("roulette");
+const spinBtn = document.getElementById("spinBtn");
+const resultBox = document.getElementById("result");
+const resultText = document.getElementById("resultText");
+
+let currentItem = null;
+let balance = 500;
+let inventory = [];
+
+document.getElementById("balance").textContent = balance;
+
 const items = [
-    { name: "Common", class: "common" },
-    { name: "Rare", class: "rare" },
-    { name: "Epic", class: "epic" },
-    { name: "Legendary", class: "legendary" },
+    { name: "Common", class: "common", price: 50 },
+    { name: "Rare", class: "rare", price: 150 },
+    { name: "Epic", class: "epic", price: 400 },
+    { name: "Legendary", class: "legendary", price: 1000 },
 ];
 
-const ITEM_WIDTH = 120;
-const TOTAL_ITEMS = 30;
+function openRoulette() {
+    document.getElementById("menu").classList.add("hidden");
+    document.getElementById("rouletteScreen").classList.remove("hidden");
+}
 
-function createItems() {
-    roulette.innerHTML = "";
-    for (let i = 0; i < TOTAL_ITEMS; i++) {
+function openInventory() {
+    document.getElementById("menu").classList.add("hidden");
+    document.getElementById("inventoryScreen").classList.remove("hidden");
+    renderInventory();
+}
+
+function backToMenu() {
+    document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden"));
+    document.getElementById("menu").classList.remove("hidden");
+}
+
+function createRouletteItems() {
+    rouletteEl.innerHTML = "";
+    for (let i = 0; i < 40; i++) {
         const item = items[Math.floor(Math.random() * items.length)];
         const div = document.createElement("div");
         div.className = `item ${item.class}`;
         div.textContent = item.name;
-        roulette.appendChild(div);
+        rouletteEl.appendChild(div);
     }
 }
 
 spinBtn.onclick = () => {
-    spinBtn.disabled = true;
-    createItems();
+    if (balance < 100) return alert("Недостаточно средств");
 
-    roulette.style.transition = "none";
-    roulette.style.transform = "translateX(0)";
+    balance -= 100;
+    document.getElementById("balance").textContent = balance;
+
+    resultBox.classList.add("hidden");
+    spinBtn.disabled = true;
+
+    createRouletteItems();
+    rouletteEl.style.transition = "none";
+    rouletteEl.style.transform = "translateX(0)";
 
     requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            roulette.style.transition = "transform 4s cubic-bezier(0.15, 0.6, 0.1, 1)";
-
-            const centerOffset = (TOTAL_ITEMS / 2) * ITEM_WIDTH;
-            const randomShift = Math.floor(Math.random() * ITEM_WIDTH);
-
-            roulette.style.transform = `translateX(-${centerOffset + randomShift}px)`;
-        });
+        rouletteEl.style.transition = "transform 7s cubic-bezier(0.1, 0.7, 0.1, 1)";
+        const index = Math.floor(Math.random() * items.length);
+        currentItem = items[index];
+        rouletteEl.style.transform = `translateX(-2200px)`;
     });
 
     setTimeout(() => {
-        Telegram.WebApp.sendData("spin");
+        resultText.textContent = `Вы выбили: ${currentItem.name}`;
+        resultBox.classList.remove("hidden");
         spinBtn.disabled = false;
-    }, 4000);
+    }, 7000);
 };
+
+function sellItem() {
+    balance += currentItem.price;
+    document.getElementById("balance").textContent = balance;
+    Telegram.WebApp.sendData("sell");
+    resultBox.classList.add("hidden");
+}
+
+function saveItem() {
+    inventory.push(currentItem);
+    Telegram.WebApp.sendData("save");
+    resultBox.classList.add("hidden");
+}
+
+function renderInventory() {
+    const inv = document.getElementById("inventory");
+    inv.innerHTML = "";
+    inventory.forEach(i => {
+        const div = document.createElement("div");
+        div.className = `item ${i.class}`;
+        div.textContent = i.name;
+        inv.appendChild(div);
+    });
+}
