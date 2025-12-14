@@ -9,14 +9,41 @@
 <body>
 
 <div class="app">
-    <h1>🎰 Рулетка</h1>
 
-    <div class="roulette-wrapper">
-        <div class="pointer"></div>
-        <div class="roulette" id="roulette"></div>
+    <!-- Верхняя панель -->
+    <div class="top-bar">
+        <span>💰 Баланс: <span id="balance">0</span></span>
     </div>
 
-    <button id="spinBtn">Крутить</button>
+    <!-- Меню -->
+    <div class="menu" id="menu">
+        <button class="menu-btn" onclick="openRoulette()">🎰 Рулетка</button>
+        <button class="menu-btn" onclick="openInventory()">🎒 Инвентарь</button>
+    </div>
+
+    <!-- Рулетка -->
+    <div class="screen hidden" id="rouletteScreen">
+        <div class="roulette-wrapper">
+            <div class="pointer"></div>
+            <div class="roulette" id="roulette"></div>
+        </div>
+
+        <button id="spinBtn">Крутить</button>
+
+        <div class="result hidden" id="result">
+            <p id="resultText"></p>
+            <button onclick="saveItem()">Сохранить</button>
+            <button onclick="sellItem()">Продать</button>
+        </div>
+    </div>
+
+    <!-- Инвентарь -->
+    <div class="screen hidden" id="inventoryScreen">
+        <h2>🎒 Инвентарь</h2>
+        <div id="inventory"></div>
+        <button onclick="backToMenu()">Назад</button>
+    </div>
+
 </div>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
