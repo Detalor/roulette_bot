@@ -1,0 +1,23 @@
+body {
+    font-family: Arial;
+    text-align: center;
+}
+
+#roulette {
+    display: flex;
+    width: 800px;
+    margin: 20px auto;
+    overflow: hidden;
+}
+
+.item {
+    width: 150px;
+    height: 100px;
+    border: 2px solid black;
+    line-height: 100px;
+    margin: 5px;
+}
+
+.center {
+    border-color: red;
+}
